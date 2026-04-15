@@ -18,6 +18,28 @@
 #include <utility>
 #include <vector>
 
+/** Indentation options for JSON pretty-printing */
+struct Indentation {
+    unsigned int size{0};      // Number of spaces per indentation level
+    bool useTabs{false};       // Use tabs instead of spaces
+
+    constexpr Indentation() = default;
+    constexpr explicit Indentation(unsigned int spaces) : size(spaces), useTabs(false) {}
+    constexpr Indentation(unsigned int s, bool tabs) : size(s), useTabs(tabs) {}
+
+    // Allow implicit conversion from unsigned int for backward compatibility
+    constexpr Indentation(int spaces) : size(static_cast<unsigned int>(spaces)), useTabs(false) {}
+
+    // Helper to check if indentation is enabled
+    constexpr bool enabled() const { return size > 0; }
+
+    // Get the indentation string for one level
+    std::string getIndentString() const {
+        if (useTabs) return "\t";
+        return std::string(size, ' ');
+    }
+};
+
 // NOLINTNEXTLINE(misc-no-recursion)
 class UniValue {
 public:
@@ -96,7 +118,7 @@ public:
     void pushKV(std::string key, UniValue val);
     void pushKVs(UniValue obj);
 
-    std::string write(unsigned int prettyIndent = 0,
+    std::string write(Indentation indentation = Indentation{},
                       unsigned int indentLevel = 0) const;
 
     bool read(std::string_view raw);
@@ -109,8 +131,8 @@ private:
 
     void checkType(const VType& expected) const;
     bool findKey(const std::string& key, size_t& retIdx) const;
-    void writeArray(unsigned int prettyIndent, unsigned int indentLevel, std::string& s) const;
-    void writeObject(unsigned int prettyIndent, unsigned int indentLevel, std::string& s) const;
+    void writeArray(Indentation indentation, unsigned int indentLevel, std::string& s) const;
+    void writeObject(Indentation indentation, unsigned int indentLevel, std::string& s) const;
 
 public:
     // Strict type-specific getters, these throw std::runtime_error if the

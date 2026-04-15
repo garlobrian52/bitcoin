@@ -27,7 +27,7 @@ static std::string json_escape(const std::string& inS)
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-std::string UniValue::write(unsigned int prettyIndent,
+std::string UniValue::write(Indentation indentation,
                             unsigned int indentLevel) const
 {
     std::string s;
@@ -42,10 +42,10 @@ std::string UniValue::write(unsigned int prettyIndent,
         s += "null";
         break;
     case VOBJ:
-        writeObject(prettyIndent, modIndent, s);
+        writeObject(indentation, modIndent, s);
         break;
     case VARR:
-        writeArray(prettyIndent, modIndent, s);
+        writeArray(indentation, modIndent, s);
         break;
     case VSTR:
         s += "\"" + json_escape(val) + "\"";
@@ -61,56 +61,60 @@ std::string UniValue::write(unsigned int prettyIndent,
     return s;
 }
 
-static void indentStr(unsigned int prettyIndent, unsigned int indentLevel, std::string& s)
+static void indentStr(Indentation indentation, unsigned int indentLevel, std::string& s)
 {
-    s.append(prettyIndent * indentLevel, ' ');
+    if (indentation.useTabs) {
+        s.append(indentLevel, '\t');
+    } else {
+        s.append(indentation.size * indentLevel, ' ');
+    }
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-void UniValue::writeArray(unsigned int prettyIndent, unsigned int indentLevel, std::string& s) const
+void UniValue::writeArray(Indentation indentation, unsigned int indentLevel, std::string& s) const
 {
     s += "[";
-    if (prettyIndent)
+    if (indentation.enabled())
         s += "\n";
 
     for (unsigned int i = 0; i < values.size(); i++) {
-        if (prettyIndent)
-            indentStr(prettyIndent, indentLevel, s);
-        s += values[i].write(prettyIndent, indentLevel + 1);
+        if (indentation.enabled())
+            indentStr(indentation, indentLevel, s);
+        s += values[i].write(indentation, indentLevel + 1);
         if (i != (values.size() - 1)) {
             s += ",";
         }
-        if (prettyIndent)
+        if (indentation.enabled())
             s += "\n";
     }
 
-    if (prettyIndent)
-        indentStr(prettyIndent, indentLevel - 1, s);
+    if (indentation.enabled())
+        indentStr(indentation, indentLevel - 1, s);
     s += "]";
 }
 
 // NOLINTNEXTLINE(misc-no-recursion)
-void UniValue::writeObject(unsigned int prettyIndent, unsigned int indentLevel, std::string& s) const
+void UniValue::writeObject(Indentation indentation, unsigned int indentLevel, std::string& s) const
 {
     s += "{";
-    if (prettyIndent)
+    if (indentation.enabled())
         s += "\n";
 
     for (unsigned int i = 0; i < keys.size(); i++) {
-        if (prettyIndent)
-            indentStr(prettyIndent, indentLevel, s);
+        if (indentation.enabled())
+            indentStr(indentation, indentLevel, s);
         s += "\"" + json_escape(keys[i]) + "\":";
-        if (prettyIndent)
+        if (indentation.enabled())
             s += " ";
-        s += values.at(i).write(prettyIndent, indentLevel + 1);
+        s += values.at(i).write(indentation, indentLevel + 1);
         if (i != (values.size() - 1))
             s += ",";
-        if (prettyIndent)
+        if (indentation.enabled())
             s += "\n";
     }
 
-    if (prettyIndent)
-        indentStr(prettyIndent, indentLevel - 1, s);
+    if (indentation.enabled())
+        indentStr(indentation, indentLevel - 1, s);
     s += "}";
 }
 

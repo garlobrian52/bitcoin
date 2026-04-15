@@ -186,6 +186,30 @@ void no_nul_test()
     assert(val.read({buf + 3, 7}));
 }
 
+// Test Indentation struct with tab support
+void indentation_test()
+{
+    UniValue obj(UniValue::VOBJ);
+    obj.pushKV("key", "value");
+    obj.pushKV("num", 42);
+
+    // Test default (no indentation)
+    std::string compact = obj.write();
+    assert(compact == "{\"key\":\"value\",\"num\":42}");
+
+    // Test space indentation (backward compatible with integer)
+    std::string spaced = obj.write(2);
+    assert(spaced.find("  \"key\"") != std::string::npos);
+
+    // Test explicit Indentation struct with spaces
+    std::string explicit_spaced = obj.write(Indentation(4));
+    assert(explicit_spaced.find("    \"key\"") != std::string::npos);
+
+    // Test tab indentation
+    std::string tabbed = obj.write(Indentation(1, true));
+    assert(tabbed.find("\t\"key\"") != std::string::npos);
+}
+
 int main(int argc, char* argv[])
 {
     for (const auto& [file, json] : tests) {
@@ -194,6 +218,7 @@ int main(int argc, char* argv[])
 
     unescape_unicode_test();
     no_nul_test();
+    indentation_test();
 
     return 0;
 }
