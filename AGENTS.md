@@ -31,10 +31,13 @@ cmake --build build -j$(nproc)
 Use regtest mode for local development and testing:
 
 ```bash
-build/bin/bitcoind -regtest -datadir=/tmp/btc-dev -daemon -rpcuser=test -rpcpassword=test123
+build/bin/bitcoind -regtest -datadir=/tmp/btc-dev -daemon -rpcuser=test -rpcpassword=test123 -fallbackfee=0.0001
 build/bin/bitcoin-cli -regtest -datadir=/tmp/btc-dev -rpcuser=test -rpcpassword=test123 <command>
 build/bin/bitcoin-cli -regtest -datadir=/tmp/btc-dev -rpcuser=test -rpcpassword=test123 stop
 ```
+
+- Pass `-fallbackfee=0.0001` in regtest; without it, `sendtoaddress` fails because fee estimation has no data on a fresh chain.
+- Wallets are not auto-loaded on restart. After restarting the daemon, run `loadwallet "name"` before wallet RPC calls.
 
 ### Key directories
 
