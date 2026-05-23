@@ -29,8 +29,12 @@ function(add_boost_if_needed)
     endif()
   endif()
 
-  find_package(Boost 1.74.0 REQUIRED CONFIG)
+  find_package(Boost 1.74.0 REQUIRED)
   mark_as_advanced(Boost_INCLUDE_DIR boost_headers_DIR)
+
+  if(NOT TARGET Boost::headers AND TARGET Boost::boost)
+    add_library(Boost::headers ALIAS Boost::boost)
+  endif()
   # Workaround for a bug in NetBSD pkgsrc.
   # See https://gnats.netbsd.org/59856.
   if(CMAKE_SYSTEM_NAME STREQUAL "NetBSD")
