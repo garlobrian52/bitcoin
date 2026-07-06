@@ -141,13 +141,7 @@ static const CBlockIndex* ParseHashOrHeight(const UniValue& param, ChainstateMan
         return active_chain[height];
     } else {
         const uint256 hash{ParseHashV(param, "hash_or_height")};
-        const CBlockIndex* pindex = chainman.m_blockman.LookupBlockIndex(hash);
-
-        if (!pindex) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
-
-        return pindex;
+        return &EnsureBlockIndex(chainman.m_blockman, hash);
     }
 }
 
@@ -642,17 +636,13 @@ static RPCMethod getblockheader()
     if (!request.params[1].isNull())
         fVerbose = request.params[1].get_bool();
 
-    const CBlockIndex* pblockindex;
     const CBlockIndex* tip;
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
+    const CBlockIndex* pblockindex;
     {
         LOCK(cs_main);
-        pblockindex = chainman.m_blockman.LookupBlockIndex(hash);
+        pblockindex = &EnsureBlockIndex(chainman.m_blockman, hash);
         tip = chainman.ActiveChain().Tip();
-    }
-
-    if (!pblockindex) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
     }
 
     if (!fVerbose)
@@ -847,17 +837,13 @@ static RPCMethod getblock()
 
     int verbosity{ParseVerbosity(request.params[1], /*default_verbosity=*/1, /*allow_bool=*/true)};
 
-    const CBlockIndex* pblockindex;
     const CBlockIndex* tip;
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
+    const CBlockIndex* pblockindex;
     {
         LOCK(cs_main);
-        pblockindex = chainman.m_blockman.LookupBlockIndex(hash);
+        pblockindex = &EnsureBlockIndex(chainman.m_blockman, hash);
         tip = chainman.ActiveChain().Tip();
-
-        if (!pblockindex) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
     }
 
     const std::vector<std::byte> block_data{GetRawBlockChecked(chainman.m_blockman, *pblockindex)};
@@ -1225,7 +1211,7 @@ static RPCMethod gettxout()
 
     UniValue ret(UniValue::VOBJ);
 
-    auto hash{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    auto hash{ParseTxid(request.params[0], "txid")};
     COutPoint out{hash, request.params[1].getInt<uint32_t>()};
     bool fMempool = true;
     if (!request.params[2].isNull())
@@ -1543,10 +1529,7 @@ RPCMethod getdeploymentinfo()
                 blockindex = CHECK_NONFATAL(active_chainstate.m_chain.Tip());
             } else {
                 const uint256 hash(ParseHashV(request.params[0], "blockhash"));
-                blockindex = chainman.m_blockman.LookupBlockIndex(hash);
-                if (!blockindex) {
-                    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-                }
+                blockindex = &EnsureBlockIndex(chainman.m_blockman, hash);
             }
 
             UniValue deploymentinfo(UniValue::VOBJ);
@@ -1695,15 +1678,12 @@ static RPCMethod preciousblock()
         [](const RPCMethod& self, const JSONRPCRequest& request) -> UniValue
 {
     uint256 hash(ParseHashV(request.params[0], "blockhash"));
-    CBlockIndex* pblockindex;
 
     ChainstateManager& chainman = EnsureAnyChainman(request.context);
+    CBlockIndex* pblockindex;
     {
         LOCK(cs_main);
-        pblockindex = chainman.m_blockman.LookupBlockIndex(hash);
-        if (!pblockindex) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
+        pblockindex = &EnsureBlockIndex(chainman.m_blockman, hash);
     }
 
     BlockValidationState state;
@@ -1723,10 +1703,7 @@ void InvalidateBlock(ChainstateManager& chainman, const uint256 block_hash) {
     CBlockIndex* pblockindex;
     {
         LOCK(chainman.GetMutex());
-        pblockindex = chainman.m_blockman.LookupBlockIndex(block_hash);
-        if (!pblockindex) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
+        pblockindex = &EnsureBlockIndex(chainman.m_blockman, block_hash);
     }
     chainman.ActiveChainstate().InvalidateBlock(state, pblockindex);
 
@@ -1767,12 +1744,9 @@ static RPCMethod invalidateblock()
 void ReconsiderBlock(ChainstateManager& chainman, uint256 block_hash) {
     {
         LOCK(chainman.GetMutex());
-        CBlockIndex* pblockindex = chainman.m_blockman.LookupBlockIndex(block_hash);
-        if (!pblockindex) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
+        CBlockIndex& pblockindex = EnsureBlockIndex(chainman.m_blockman, block_hash);
 
-        chainman.ActiveChainstate().ResetBlockFailureFlags(pblockindex);
+        chainman.ActiveChainstate().ResetBlockFailureFlags(&pblockindex);
         chainman.RecalculateBestHeader();
     }
 
@@ -1853,10 +1827,7 @@ static RPCMethod getchaintxstats()
     } else {
         uint256 hash(ParseHashV(request.params[1], "blockhash"));
         LOCK(cs_main);
-        pindex = chainman.m_blockman.LookupBlockIndex(hash);
-        if (!pindex) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
+        pindex = &EnsureBlockIndex(chainman.m_blockman, hash);
         if (!chainman.ActiveChain().Contains(pindex)) {
             throw JSONRPCError(RPC_INVALID_PARAMETER, "Block is not in main chain");
         }
@@ -2996,10 +2967,7 @@ static RPCMethod getblockfilter()
     {
         ChainstateManager& chainman = EnsureAnyChainman(request.context);
         LOCK(cs_main);
-        block_index = chainman.m_blockman.LookupBlockIndex(block_hash);
-        if (!block_index) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-        }
+        block_index = &EnsureBlockIndex(chainman.m_blockman, block_hash);
         block_was_connected = block_index->IsValid(BLOCK_VALID_SCRIPTS);
     }
 

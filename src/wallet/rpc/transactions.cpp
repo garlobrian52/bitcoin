@@ -727,7 +727,7 @@ RPCMethod gettransaction()
 
     LOCK(pwallet->cs_wallet);
 
-    Txid hash{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    Txid hash{ParseTxid(request.params[0], "txid")};
 
     bool verbose = request.params[2].isNull() ? false : request.params[2].get_bool();
 
@@ -804,7 +804,7 @@ RPCMethod abandontransaction()
 
     LOCK(pwallet->cs_wallet);
 
-    Txid hash{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    Txid hash{ParseTxid(request.params[0], "txid")};
 
     if (!pwallet->mapWallet.contains(hash)) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");

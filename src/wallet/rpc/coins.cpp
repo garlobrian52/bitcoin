@@ -27,10 +27,7 @@ static CAmount GetReceived(const CWallet& wallet, const UniValue& params, bool b
         if (addresses.empty()) throw JSONRPCError(RPC_WALLET_ERROR, "Label not found in wallet");
     } else {
         // Get the address
-        CTxDestination dest = DecodeDestination(params[0].get_str());
-        if (!IsValidDestination(dest)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-        }
+        CTxDestination dest = DecodeAndValidateDestination(params[0].get_str());
         addresses.emplace_back(dest);
     }
 
@@ -537,10 +534,7 @@ RPCMethod listunspent()
         UniValue inputs = request.params[2].get_array();
         for (unsigned int idx = 0; idx < inputs.size(); idx++) {
             const UniValue& input = inputs[idx];
-            CTxDestination dest = DecodeDestination(input.get_str());
-            if (!IsValidDestination(dest)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, std::string("Invalid Bitcoin address: ") + input.get_str());
-            }
+            CTxDestination dest = DecodeAndValidateDestination(input.get_str(), std::string("Invalid Bitcoin address: ") + input.get_str());
             if (!destinations.insert(dest).second) {
                 throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + input.get_str());
             }

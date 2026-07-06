@@ -112,7 +112,7 @@ RPCMethod removeprunedfunds()
 
     LOCK(pwallet->cs_wallet);
 
-    Txid hash{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    Txid hash{ParseTxid(request.params[0], "txid")};
     std::vector<Txid> vHash;
     vHash.push_back(hash);
     if (auto res = pwallet->RemoveTxs(vHash); !res) {

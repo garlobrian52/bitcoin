@@ -286,10 +286,7 @@ static RPCMethod generatetoaddress()
     const int num_blocks{request.params[0].getInt<int>()};
     const uint64_t max_tries{request.params[2].isNull() ? DEFAULT_MAX_TRIES : request.params[2].getInt<int>()};
 
-    CTxDestination destination = DecodeDestination(request.params[1].get_str());
-    if (!IsValidDestination(destination)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address");
-    }
+    CTxDestination destination = DecodeAndValidateDestination(request.params[1].get_str(), "Error: Invalid address");
 
     NodeContext& node = EnsureAnyNodeContext(request.context);
     Mining& miner = EnsureMining(node);
@@ -336,10 +333,7 @@ static RPCMethod generateblock()
     std::string error;
 
     if (!getScriptFromDescriptor(address_or_descriptor, coinbase_output_script, error)) {
-        const auto destination = DecodeDestination(address_or_descriptor);
-        if (!IsValidDestination(destination)) {
-            throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Error: Invalid address or descriptor");
-        }
+        const auto destination = DecodeAndValidateDestination(address_or_descriptor, "Error: Invalid address or descriptor");
 
         coinbase_output_script = GetScriptForDestination(destination);
     }
@@ -522,7 +516,7 @@ static RPCMethod prioritisetransaction()
 {
     LOCK(cs_main);
 
-    auto txid{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    auto txid{ParseTxid(request.params[0], "txid")};
     const auto dummy{self.MaybeArg<double>("dummy")};
     CAmount nAmount = request.params[2].getInt<int64_t>();
 

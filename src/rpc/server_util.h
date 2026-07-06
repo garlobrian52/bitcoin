@@ -8,6 +8,7 @@
 #include <any>
 
 #include <consensus/params.h>
+#include <uint256.h>
 
 class AddrMan;
 class ArgsManager;
@@ -19,6 +20,7 @@ class ChainstateManager;
 class PeerManager;
 class BanMan;
 namespace node {
+class BlockManager;
 struct NodeContext;
 } // namespace node
 namespace interfaces {
@@ -41,6 +43,13 @@ interfaces::Mining& EnsureMining(const node::NodeContext& node);
 PeerManager& EnsurePeerman(const node::NodeContext& node);
 AddrMan& EnsureAddrman(const node::NodeContext& node);
 AddrMan& EnsureAnyAddrman(const std::any& context);
+
+/**
+ * Look up a block index by hash, throwing JSONRPCError if not found.
+ * Caller must hold cs_main.
+ */
+const CBlockIndex& EnsureBlockIndex(const node::BlockManager& blockman, const uint256& hash);
+CBlockIndex& EnsureBlockIndex(node::BlockManager& blockman, const uint256& hash);
 
 /** Return an empty block index on top of the tip, with height, time and nBits set */
 void NextEmptyBlockIndex(CBlockIndex& tip, const Consensus::Params& consensusParams, CBlockIndex& next_index);
