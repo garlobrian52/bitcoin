@@ -88,7 +88,8 @@ std::unique_ptr<Sock> Sock::Accept(sockaddr* addr, socklen_t* addr_len) const
     if (socket != ERR) {
         try {
             sock = std::make_unique<Sock>(socket);
-        } catch (const std::exception&) {
+        } catch (const std::exception& e) {
+            LogWarning("Failed to allocate Sock after accept(): %s", e.what());
 #ifdef WIN32
             closesocket(socket);
 #else

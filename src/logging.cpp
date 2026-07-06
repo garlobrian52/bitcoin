@@ -525,7 +525,9 @@ void BCLog::Logger::ShrinkDebugFile()
     size_t log_size = 0;
     try {
         log_size = fs::file_size(m_file_path);
-    } catch (const fs::filesystem_error&) {}
+    } catch (const fs::filesystem_error& e) {
+        LogInfo("Failed to determine log file size: %s", e.what());
+    }
 
     // If debug.log file is more than 10% bigger the RECENT_DEBUG_HISTORY_SIZE
     // trim it down by saving only the last RECENT_DEBUG_HISTORY_SIZE bytes
