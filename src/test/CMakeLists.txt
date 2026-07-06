@@ -6,6 +6,7 @@
 # SOURCES property is processed to gather test suite macros.
 add_executable(test_bitcoin
   main.cpp
+  addresstype_tests.cpp
   addrman_tests.cpp
   allocator_tests.cpp
   amount_tests.cpp
@@ -40,6 +41,7 @@ add_executable(test_bitcoin
   cuckoocache_tests.cpp
   dbwrapper_tests.cpp
   denialofservice_tests.cpp
+  deploymentinfo_tests.cpp
   descriptor_tests.cpp
   disconnected_transactions.cpp
   feefrac_tests.cpp
@@ -67,6 +69,7 @@ add_executable(test_bitcoin
   bip328_tests.cpp
   net_peer_connection_tests.cpp
   net_peer_eviction_tests.cpp
+  net_permissions_tests.cpp
   net_tests.cpp
   netbase_tests.cpp
   node_init_tests.cpp
@@ -78,6 +81,8 @@ add_executable(test_bitcoin
   policyestimator_tests.cpp
   pool_tests.cpp
   pow_tests.cpp
+  outputtype_tests.cpp
+  protocol_tests.cpp
   prevector_tests.cpp
   private_broadcast_tests.cpp
   raii_event_tests.cpp
