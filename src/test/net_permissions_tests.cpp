@@ -6,6 +6,7 @@
 #include <test/util/setup_common.h>
 #include <util/translation.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -117,7 +118,20 @@ BOOST_AUTO_TEST_CASE(to_strings_compound)
 BOOST_AUTO_TEST_CASE(to_strings_all)
 {
     auto strings = NetPermissions::ToStrings(NetPermissionFlags::All);
-    BOOST_CHECK_EQUAL(strings.size(), 7U);
+    const std::vector<std::string> expected{
+        "bloomfilter",
+        "noban",
+        "forcerelay",
+        "relay",
+        "mempool",
+        "download",
+        "addr",
+    };
+    for (const auto& perm : expected) {
+        BOOST_CHECK_MESSAGE(std::find(strings.begin(), strings.end(), perm) != strings.end(),
+                            "missing permission: " + perm);
+    }
+    BOOST_CHECK_EQUAL(strings.size(), expected.size());
 }
 
 BOOST_AUTO_TEST_CASE(operator_or)
