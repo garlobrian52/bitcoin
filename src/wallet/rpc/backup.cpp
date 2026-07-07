@@ -384,6 +384,8 @@ RPCMethod importdescriptors()
     int64_t lowest_timestamp = 0;
     bool rescan = false;
     UniValue response(UniValue::VARR);
+    // Keep per-request timestamps aligned with response entries. Failed timestamp parsing
+    // stores std::nullopt and those entries are filtered out before any dereference below.
     std::vector<std::optional<int64_t>> timestamps;
     timestamps.reserve(requests.size());
     {
