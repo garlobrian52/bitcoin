@@ -450,6 +450,7 @@ RPCMethod importdescriptors()
                     continue;
                 }
 
+                CHECK_NONFATAL(timestamps.at(i).has_value());
                 const int64_t timestamp{*timestamps.at(i)};
                 if (scanned_time <= timestamp) {
                     response.push_back(result);
