@@ -75,16 +75,16 @@ add_executable(test_bitcoin
   node_init_tests.cpp
   node_warnings_tests.cpp
   orphanage_tests.cpp
+  outputtype_tests.cpp
   pcp_tests.cpp
   peerman_tests.cpp
   pmt_tests.cpp
   policyestimator_tests.cpp
   pool_tests.cpp
   pow_tests.cpp
-  outputtype_tests.cpp
-  protocol_tests.cpp
   prevector_tests.cpp
   private_broadcast_tests.cpp
+  protocol_tests.cpp
   raii_event_tests.cpp
   random_tests.cpp
   rbf_tests.cpp

@@ -82,6 +82,9 @@ BOOST_AUTO_TEST_CASE(output_type_from_destination)
 
     // PubKeyDestination -> nullopt
     BOOST_CHECK(OutputTypeFromDestination(PubKeyDestination{CPubKey{}}) == std::nullopt);
+
+    // PayToAnchor -> nullopt (distinct variant from WitnessUnknown)
+    BOOST_CHECK(OutputTypeFromDestination(PayToAnchor{}) == std::nullopt);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
