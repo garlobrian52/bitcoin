@@ -46,10 +46,7 @@ RPCMethod signmessage()
             std::string strAddress = request.params[0].get_str();
             std::string strMessage = request.params[1].get_str();
 
-            CTxDestination dest = DecodeDestination(strAddress);
-            if (!IsValidDestination(dest)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
-            }
+            CTxDestination dest = DecodeAndValidateDestination(strAddress, "Invalid address");
 
             const PKHash* pkhash = std::get_if<PKHash>(&dest);
             if (!pkhash) {
