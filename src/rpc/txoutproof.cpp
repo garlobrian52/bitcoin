@@ -49,7 +49,7 @@ static RPCMethod gettxoutproof()
                 throw JSONRPCError(RPC_INVALID_PARAMETER, "Parameter 'txids' cannot be empty");
             }
             for (unsigned int idx = 0; idx < txids.size(); idx++) {
-                auto ret{setTxids.insert(Txid::FromUint256(ParseHashV(txids[idx], "txid")))};
+                auto ret{setTxids.insert(ParseTxid(txids[idx], "txid"))};
                 if (!ret.second) {
                     throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated txid: ") + txids[idx].get_str());
                 }
@@ -61,10 +61,7 @@ static RPCMethod gettxoutproof()
             if (!request.params[1].isNull()) {
                 LOCK(cs_main);
                 hashBlock = ParseHashV(request.params[1], "blockhash");
-                pblockindex = chainman.m_blockman.LookupBlockIndex(hashBlock);
-                if (!pblockindex) {
-                    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
-                }
+                pblockindex = &EnsureBlockIndex(chainman.m_blockman, hashBlock);
             } else {
                 LOCK(cs_main);
                 Chainstate& active_chainstate = chainman.ActiveChainstate();

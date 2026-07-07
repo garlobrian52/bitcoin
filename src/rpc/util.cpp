@@ -141,6 +141,20 @@ std::vector<unsigned char> ParseHexO(const UniValue& o, std::string_view strKey)
     return ParseHexV(o.find_value(strKey), strKey);
 }
 
+Txid ParseTxid(const UniValue& v, std::string_view name)
+{
+    return Txid::FromUint256(ParseHashV(v, name));
+}
+
+CTxDestination DecodeAndValidateDestination(const std::string& address, const std::string& error_msg)
+{
+    CTxDestination dest = DecodeDestination(address);
+    if (!IsValidDestination(dest)) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, error_msg);
+    }
+    return dest;
+}
+
 namespace {
 
 /**

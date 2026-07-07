@@ -9,6 +9,7 @@
 #include <consensus/amount.h>
 #include <node/transaction.h>
 #include <outputtype.h>
+#include <primitives/transaction_identifier.h>
 #include <pubkey.h>
 #include <rpc/protocol.h>
 #include <rpc/request.h>
@@ -103,6 +104,18 @@ uint256 ParseHashV(const UniValue& v, std::string_view name);
 uint256 ParseHashO(const UniValue& o, std::string_view strKey);
 std::vector<unsigned char> ParseHexV(const UniValue& v, std::string_view name);
 std::vector<unsigned char> ParseHexO(const UniValue& o, std::string_view strKey);
+
+/** Parse a hex-encoded txid from a UniValue, throwing on invalid input. */
+Txid ParseTxid(const UniValue& v, std::string_view name);
+
+/**
+ * Decode a Bitcoin address string and validate it, throwing JSONRPCError if invalid.
+ *
+ * @param[in] address   The address string to decode and validate.
+ * @param[in] error_msg Custom error message (defaults to "Invalid Bitcoin address").
+ * @returns A valid CTxDestination.
+ */
+CTxDestination DecodeAndValidateDestination(const std::string& address, const std::string& error_msg = "Invalid Bitcoin address");
 
 /**
  * Parses verbosity from provided UniValue.

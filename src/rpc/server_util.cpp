@@ -7,6 +7,7 @@
 #include <chain.h>
 #include <common/args.h>
 #include <net_processing.h>
+#include <node/blockstorage.h>
 #include <node/context.h>
 #include <node/miner.h>
 #include <policy/fees/block_policy_estimator.h>
@@ -132,6 +133,24 @@ AddrMan& EnsureAddrman(const NodeContext& node)
 AddrMan& EnsureAnyAddrman(const std::any& context)
 {
     return EnsureAddrman(EnsureAnyNodeContext(context));
+}
+
+const CBlockIndex& EnsureBlockIndex(const node::BlockManager& blockman, const uint256& hash)
+{
+    const CBlockIndex* pindex = blockman.LookupBlockIndex(hash);
+    if (!pindex) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+    }
+    return *pindex;
+}
+
+CBlockIndex& EnsureBlockIndex(node::BlockManager& blockman, const uint256& hash)
+{
+    CBlockIndex* pindex = blockman.LookupBlockIndex(hash);
+    if (!pindex) {
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Block not found");
+    }
+    return *pindex;
 }
 
 void NextEmptyBlockIndex(CBlockIndex& tip, const Consensus::Params& consensusParams, CBlockIndex& next_index)
