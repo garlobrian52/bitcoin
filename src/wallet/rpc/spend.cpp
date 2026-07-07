@@ -520,11 +520,7 @@ CreatedTransactionResult FundTransaction(CWallet& wallet, const CMutableTransact
 
             if (options.exists("changeAddress") || options.exists("change_address")) {
                 const std::string change_address_str = (options.exists("change_address") ? options["change_address"] : options["changeAddress"]).get_str();
-                CTxDestination dest = DecodeDestination(change_address_str);
-
-                if (!IsValidDestination(dest)) {
-                    throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Change address must be a valid bitcoin address");
-                }
+                CTxDestination dest = DecodeAndValidateDestination(change_address_str, "Change address must be a valid bitcoin address");
 
                 coinControl.destChange = dest;
             }
@@ -1036,7 +1032,7 @@ static RPCMethod bumpfee_helper(std::string method_name)
         throw JSONRPCError(RPC_WALLET_ERROR, "bumpfee is not available with wallets that have private keys disabled. Use psbtbumpfee instead.");
     }
 
-    Txid hash{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    Txid hash{ParseTxid(request.params[0], "txid")};
 
     CCoinControl coin_control;
     // optional parameters

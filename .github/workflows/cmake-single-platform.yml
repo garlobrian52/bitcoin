@@ -22,16 +22,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install build dependencies
+    - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends \
+        sudo apt-get install -y \
           build-essential \
           cmake \
+          ninja-build \
           pkg-config \
+          python3 \
           libboost-dev \
           libevent-dev \
-          libsqlite3-dev
+          libsqlite3-dev \
+          capnproto \
+          libcapnp-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -52,4 +56,3 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --test-dir ${{github.workspace}}/build -C ${{env.BUILD_TYPE}} --output-on-failure -j"$(nproc)"
-

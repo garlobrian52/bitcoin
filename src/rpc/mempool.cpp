@@ -731,7 +731,7 @@ static RPCMethod getmempoolancestors()
     if (!request.params[1].isNull())
         fVerbose = request.params[1].get_bool();
 
-    auto txid{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    auto txid{ParseTxid(request.params[0], "txid")};
 
     const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
     LOCK(mempool.cs);
@@ -792,7 +792,7 @@ static RPCMethod getmempooldescendants()
     if (!request.params[1].isNull())
         fVerbose = request.params[1].get_bool();
 
-    auto txid{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    auto txid{ParseTxid(request.params[0], "txid")};
 
     const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
     LOCK(mempool.cs);
@@ -843,12 +843,11 @@ static RPCMethod getmempoolcluster()
         },
         [](const RPCMethod& self, const JSONRPCRequest& request) -> UniValue
 {
-    uint256 hash = ParseHashV(request.params[0], "txid");
+    auto txid{ParseTxid(request.params[0], "txid")};
 
     const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
     LOCK(mempool.cs);
 
-    auto txid = Txid::FromUint256(hash);
     const auto entry{mempool.GetEntry(txid)};
     if (entry == nullptr) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Transaction not in mempool");
@@ -879,7 +878,7 @@ static RPCMethod getmempoolentry()
         },
         [](const RPCMethod& self, const JSONRPCRequest& request) -> UniValue
 {
-    auto txid{Txid::FromUint256(ParseHashV(request.params[0], "txid"))};
+    auto txid{ParseTxid(request.params[0], "txid")};
 
     const CTxMemPool& mempool = EnsureAnyMemPool(request.context);
     LOCK(mempool.cs);

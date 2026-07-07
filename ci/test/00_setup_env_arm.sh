@@ -20,4 +20,5 @@ export BITCOIN_CONFIG=" \
   --preset=dev-mode \
   -DREDUCE_EXPORTS=ON \
   -DCMAKE_CXX_FLAGS='-Wno-psabi -Wno-error=maybe-uninitialized' \
+  -DCMAKE_TRY_COMPILE_TARGET_TYPE=STATIC_LIBRARY \
 "

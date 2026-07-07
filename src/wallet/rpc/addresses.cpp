@@ -136,10 +136,7 @@ RPCMethod setlabel()
 
     LOCK(pwallet->cs_wallet);
 
-    CTxDestination dest = DecodeDestination(request.params[0].get_str());
-    if (!IsValidDestination(dest)) {
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid Bitcoin address");
-    }
+    CTxDestination dest = DecodeAndValidateDestination(request.params[0].get_str());
 
     const std::string label{LabelFromValue(request.params[1])};
 
@@ -653,12 +650,7 @@ RPCMethod walletdisplayaddress()
 
             LOCK(pwallet->cs_wallet);
 
-            CTxDestination dest = DecodeDestination(request.params[0].get_str());
-
-            // Make sure the destination is valid
-            if (!IsValidDestination(dest)) {
-                throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid address");
-            }
+            CTxDestination dest = DecodeAndValidateDestination(request.params[0].get_str(), "Invalid address");
 
             util::Result<void> res = pwallet->DisplayAddress(dest);
             if (!res) throw JSONRPCError(RPC_MISC_ERROR, util::ErrorString(res).original);

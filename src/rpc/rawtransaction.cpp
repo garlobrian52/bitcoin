@@ -284,7 +284,7 @@ static RPCMethod getrawtransaction()
     const NodeContext& node = EnsureAnyNodeContext(request.context);
     ChainstateManager& chainman = EnsureChainman(node);
 
-    auto txid{Txid::FromUint256(ParseHashV(request.params[0], "parameter 1"))};
+    auto txid{ParseTxid(request.params[0], "parameter 1")};
     const CBlockIndex* blockindex = nullptr;
 
     if (txid.ToUint256() == chainman.GetParams().GenesisBlock().hashMerkleRoot) {
