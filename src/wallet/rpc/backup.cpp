@@ -361,6 +361,9 @@ RPCMethod importdescriptors()
     std::shared_ptr<CWallet> const pwallet = GetWalletForJSONRPCRequest(main_request);
     if (!pwallet) return UniValue::VNULL;
     CWallet& wallet{*pwallet};
+    if (!wallet.IsWalletFlagSet(WALLET_FLAG_DESCRIPTORS)) {
+        throw JSONRPCError(RPC_WALLET_ERROR, "Only descriptor wallets support importdescriptors. Migrate this wallet with migratewallet first.");
+    }
 
     // Make sure the results are valid at least up to the most recent block
     // the user could have gotten from another RPC command prior to now
