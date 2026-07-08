@@ -54,8 +54,8 @@ static std::shared_ptr<CWallet> MakeWallet(const std::string& name, const fs::pa
     DBErrors load_wallet_ret;
     try {
         load_wallet_ret = wallet_instance->PopulateWalletFromDB(error, warnings);
-    } catch (const std::runtime_error&) {
-        tfm::format(std::cerr, "Error loading %s. Is wallet being used by another process?\n", name);
+    } catch (const std::runtime_error& e) {
+        tfm::format(std::cerr, "Error loading %s: %s. Is wallet being used by another process?\n", name, e.what());
         return nullptr;
     }
 

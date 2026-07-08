@@ -799,7 +799,7 @@ static DBErrors LoadDescriptorWalletRecords(CWallet* pwallet, DatabaseBatch& bat
                 key >> der_index;
                 parent = false;
             }
-            catch (...) {}
+            catch (const std::ios_base::failure&) {}
 
             std::vector<unsigned char> ser_xpub(BIP32_EXTKEY_SIZE);
             value >> ser_xpub;
@@ -1146,8 +1146,11 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
         // we can log
         pwallet->WalletLogPrintf("%s\n", e.what());
         result = DBErrors::CORRUPT;
+    } catch (const std::exception& e) {
+        pwallet->WalletLogPrintf("Unexpected exception during wallet load: %s\n", e.what());
+        result = DBErrors::CORRUPT;
     } catch (...) {
-        // All other exceptions are still problematic, but we can't log them
+        pwallet->WalletLogPrintf("Unknown non-standard exception during wallet load\n");
         result = DBErrors::CORRUPT;
     }
 
@@ -1166,7 +1169,11 @@ DBErrors WalletBatch::LoadWallet(CWallet* pwallet)
     // This operation is not atomic, but if it fails, only new entries are added so it is backwards compatible
     try {
         pwallet->UpgradeDescriptorCache();
+    } catch (const std::exception& e) {
+        pwallet->WalletLogPrintf("Error upgrading descriptor cache: %s\n", e.what());
+        result = DBErrors::CORRUPT;
     } catch (...) {
+        pwallet->WalletLogPrintf("Unknown exception upgrading descriptor cache\n");
         result = DBErrors::CORRUPT;
     }
 

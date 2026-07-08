@@ -510,7 +510,11 @@ btck_Transaction* btck_transaction_create(const void* raw_transaction, size_t ra
     try {
         SpanReader stream{std::span{reinterpret_cast<const std::byte*>(raw_transaction), raw_transaction_len}};
         return btck_Transaction::create(std::make_shared<const CTransaction>(deserialize, TX_WITH_WITNESS, stream));
+    } catch (const std::exception& e) {
+        LogDebug(BCLog::KERNEL, "Transaction decode failed: %s", e.what());
+        return nullptr;
     } catch (...) {
+        LogDebug(BCLog::KERNEL, "Transaction decode failed with unknown error.");
         return nullptr;
     }
 }
@@ -559,7 +563,11 @@ int btck_transaction_to_bytes(const btck_Transaction* transaction, btck_WriteByt
         WriterStream ws{writer, user_data};
         ws << TX_WITH_WITNESS(btck_Transaction::get(transaction));
         return 0;
+    } catch (const std::exception& e) {
+        LogDebug(BCLog::KERNEL, "Transaction serialization failed: %s", e.what());
+        return -1;
     } catch (...) {
+        LogDebug(BCLog::KERNEL, "Transaction serialization failed with unknown error.");
         return -1;
     }
 }
@@ -640,7 +648,11 @@ btck_PrecomputedTransactionData* btck_precomputed_transaction_data_create(
         }
 
         return txdata;
+    } catch (const std::exception& e) {
+        LogDebug(BCLog::KERNEL, "Failed to create precomputed transaction data: %s", e.what());
+        return nullptr;
     } catch (...) {
+        LogDebug(BCLog::KERNEL, "Failed to create precomputed transaction data with unknown error.");
         return nullptr;
     }
 }
@@ -791,7 +803,8 @@ btck_LoggingConnection* btck_logging_connection_create(btck_LogCallback callback
 {
     try {
         return btck_LoggingConnection::create(callback, user_data, user_data_destroy_callback);
-    } catch (const std::exception&) {
+    } catch (const std::exception& e) {
+        LogError("Failed to create logging connection: %s", e.what());
         return nullptr;
     }
 }
@@ -1116,8 +1129,11 @@ btck_Block* btck_block_create(const void* raw_block, size_t raw_block_length)
 
     try {
         stream >> TX_WITH_WITNESS(*block);
+    } catch (const std::exception& e) {
+        LogDebug(BCLog::KERNEL, "Block decode failed: %s", e.what());
+        return nullptr;
     } catch (...) {
-        LogDebug(BCLog::KERNEL, "Block decode failed.");
+        LogDebug(BCLog::KERNEL, "Block decode failed with unknown error.");
         return nullptr;
     }
 
@@ -1165,7 +1181,11 @@ int btck_block_to_bytes(const btck_Block* block, btck_WriteBytes writer, void* u
         WriterStream ws{writer, user_data};
         ws << TX_WITH_WITNESS(*btck_Block::get(block));
         return 0;
+    } catch (const std::exception& e) {
+        LogDebug(BCLog::KERNEL, "Block serialization failed: %s", e.what());
+        return -1;
     } catch (...) {
+        LogDebug(BCLog::KERNEL, "Block serialization failed with unknown error.");
         return -1;
     }
 }

@@ -237,7 +237,8 @@ std::vector<CAddress> ReadAnchors(const fs::path& anchors_db_path)
     try {
         DeserializeFileDB(anchors_db_path, CAddress::V2_DISK(anchors));
         LogInfo("Loaded %i addresses from %s", anchors.size(), fs::quoted(fs::PathToString(anchors_db_path.filename())));
-    } catch (const std::exception&) {
+    } catch (const std::exception& e) {
+        LogInfo("Unable to read anchors from %s: %s", fs::quoted(fs::PathToString(anchors_db_path.filename())), e.what());
         anchors.clear();
     }
 
