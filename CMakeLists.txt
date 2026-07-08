@@ -13,6 +13,12 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
   message(FATAL_ERROR "In-source builds are not allowed.")
 endif()
 
+if(POLICY CMP0167)
+  # The FindBoost module is removed; use Boost's own CMake config files.
+  # See: https://cmake.org/cmake/help/latest/policy/CMP0167.html
+  cmake_policy(SET CMP0167 NEW)
+endif()
+
 if(POLICY CMP0171)
   # `codegen` is a reserved target name.
   # See: https://cmake.org/cmake/help/latest/policy/CMP0171.html
