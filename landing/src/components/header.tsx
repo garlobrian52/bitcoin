@@ -6,7 +6,7 @@ export function Header() {
   const { brand, hero, nav } = siteContent;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#09090b]/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 min-h-[var(--site-header-height)] border-b border-white/10 bg-[#09090b]/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-4 md:h-16 md:flex-nowrap md:justify-between md:py-0">
         <Link href="/" className="flex items-center gap-3 text-white">
           <LogoMark />

@@ -3,6 +3,15 @@
 :root {
   --background: #09090b;
   --foreground: #fafafa;
+  /* Sticky header height — keep in sync with Header. Mobile wraps the nav row. */
+  --site-header-height: 7rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    /* md:h-16 content row + border breathing room */
+    --site-header-height: 4.25rem;
+  }
 }
 
 @theme inline {
@@ -20,4 +29,5 @@ body {
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: var(--site-header-height);
 }
