@@ -43,9 +43,9 @@ npm run build
 | --- | --- |
 | `src/content/site.ts` | Defines the `SiteContent` interface and the page's copy, links, feature icons, and steps. |
 | `src/app/page.tsx` | Sets the section order for the `/` route. |
-| `src/app/layout.tsx` | Defines metadata, Geist fonts, global page classes, and the sticky-header scroll offset. |
+| `src/app/layout.tsx` | Defines metadata, Geist fonts, and global page classes. |
 | `src/components/*.tsx` | Renders the header, hero, features, workflow, call to action, footer, and SVG icons. |
-| `src/app/globals.css` | Loads Tailwind CSS 4 and defines global theme values. |
+| `src/app/globals.css` | Loads Tailwind CSS 4, defines global theme values, and keeps sticky-header height and anchor spacing aligned. |
 
 The render flow is:
 
@@ -103,9 +103,19 @@ a Linear client or synchronization command.
    `#id` value to `siteContent.nav`.
 
 The existing anchors are `#features`, `#how-it-works`, and `#cta`. Keep link
-fragments and section IDs synchronized. The `scroll-pt-*` classes in
-`src/app/layout.tsx` prevent anchored sections from being hidden by the sticky
-header.
+fragments and section IDs synchronized.
+
+The sticky header and in-page navigation share `--site-header-height` in
+`src/app/globals.css`. The default `7rem` value covers the wrapped mobile
+header; the `min-width: 768px` rule changes it to `4.25rem` alongside the
+header's `md:*` layout. `Header` uses the token as its minimum height, and
+`html` uses the same token for `scroll-padding-top`, so hash navigation leaves
+the header-sized space above each section.
+
+When changing header padding, row height, wrapping, or the `md` breakpoint,
+update the token values in `globals.css` and verify every anchor at widths below
+and above 768px. Do not add an independent `scroll-pt-*` value to
+`src/app/layout.tsx`; a second offset can drift from the rendered header.
 
 The header button reuses `hero.primaryCta`; changing that entry affects both
 the header and hero. Page metadata also comes from `brand` and
@@ -118,6 +128,9 @@ so rebuild the application when publishing a new version.
   `npm run build` first.
 - If an in-page link lands at the top or does not move, verify that its `href`
   exactly matches a rendered section `id`.
+- If an anchored section is hidden by the header, compare the rendered header
+  height with `--site-header-height` at the current breakpoint, and confirm
+  `scroll-padding-top` still uses that token.
 - If Bitcoin Core's CMake or test commands pass but landing-page changes fail,
   run the commands in this directory; the root build does not cover `landing/`.
 - When changing framework APIs, consult the Next.js 16 documentation installed
