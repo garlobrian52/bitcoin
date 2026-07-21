@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Manrope } from "next/font/google";
 import { siteContent } from "@/content/site";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const display = Fraunces({
+  variable: "--font-display",
   subsets: ["latin"],
+  axes: ["SOFT", "WONK", "opsz"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const body = Manrope({
+  variable: "--font-body",
   subsets: ["latin"],
 });
 
@@ -26,9 +27,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full scroll-smooth scroll-pt-24 antialiased md:scroll-pt-16`}
+      className={`${display.variable} ${body.variable} h-full scroll-smooth scroll-pt-24 antialiased md:scroll-pt-20`}
     >
-      <body className="min-h-full bg-[#09090b] font-sans text-zinc-100">{children}</body>
+      <body className="min-h-full font-sans text-[var(--ink)]">{children}</body>
     </html>
   );
 }

@@ -6,7 +6,7 @@ export type NavLink = {
 export type Feature = {
   title: string;
   description: string;
-  icon: "sparkles" | "shield" | "zap" | "layers";
+  icon: "links" | "brand" | "analytics" | "share";
 };
 
 export type Step = {
@@ -22,7 +22,6 @@ export type SiteContent = {
   };
   nav: NavLink[];
   hero: {
-    eyebrow: string;
     headline: string;
     subheadline: string;
     primaryCta: { label: string; href: string };
@@ -47,90 +46,93 @@ export type SiteContent = {
     copyright: string;
     links: NavLink[];
   };
+  preview: {
+    handle: string;
+    bio: string;
+    links: { label: string; href: string }[];
+  };
 };
 
 /**
  * Central content source for the landing page.
- * Update this file once Linear project requirements are synced.
+ * Aligned to the Blueprint link-page product (Vercel: v0-linktree-clone-plan).
+ * Sync remaining copy from Linear once MCP auth is available.
  */
 export const siteContent: SiteContent = {
   brand: {
     name: "Blueprint",
-    tagline: "Plan, build, and ship with clarity.",
+    tagline: "Your links. One page. Everywhere.",
   },
   nav: [
     { label: "Features", href: "#features" },
     { label: "How it works", href: "#how-it-works" },
-    { label: "Get started", href: "#cta" },
+    { label: "Pricing", href: "#cta" },
   ],
   hero: {
-    eyebrow: "Landing page foundation",
-    headline: "Turn your product vision into a page that converts.",
+    headline: "One page for every link that matters.",
     subheadline:
-      "A modular Next.js foundation ready to be filled in from your Linear project — hero, features, workflow, and call-to-action sections included.",
-    primaryCta: { label: "Get started", href: "#cta" },
-    secondaryCta: { label: "See features", href: "#features" },
+      "Blueprint gives creators and shops a fast, beautiful link page — share it on socials, in bios, and on packaging.",
+    primaryCta: { label: "Create your page", href: "#cta" },
+    secondaryCta: { label: "See how it works", href: "#how-it-works" },
   },
   features: {
-    title: "Built for fast iteration",
+    title: "Everything you need in a link page",
     description:
-      "Each section is isolated and content-driven so you can map Linear issues directly to components.",
+      "Design once, update anytime, and keep every audience pointed to the right place.",
     items: [
       {
-        title: "Content-first architecture",
+        title: "Unlimited links",
         description:
-          "All copy and links live in a single typed config, making it easy to sync from Linear docs or issues.",
-        icon: "layers",
+          "Stack products, socials, drops, and newsletters. Reorder in seconds with live preview.",
+        icon: "links",
       },
       {
-        title: "Polished by default",
+        title: "Brand-ready themes",
         description:
-          "Responsive layout, accessible navigation, and a cohesive visual system out of the box.",
-        icon: "sparkles",
+          "Match your look with custom colors, fonts, and profile art — no design degree required.",
+        icon: "brand",
       },
       {
-        title: "Production ready",
+        title: "Click insights",
         description:
-          "Next.js App Router, TypeScript, and Tailwind CSS — ready to deploy on Vercel.",
-        icon: "zap",
+          "See which links convert so you can promote what actually works.",
+        icon: "analytics",
       },
       {
-        title: "Easy to extend",
+        title: "Share anywhere",
         description:
-          "Add new sections as your Linear project grows without restructuring the app.",
-        icon: "shield",
+          "One short URL for Instagram, TikTok, packaging QR codes, and email signatures.",
+        icon: "share",
       },
     ],
   },
   howItWorks: {
-    title: "How it works",
-    description: "A simple flow from planning to launch.",
+    title: "Live in minutes",
+    description: "From empty page to shareable link — without a website rebuild.",
     steps: [
       {
         number: "01",
-        title: "Define in Linear",
-        description:
-          "Capture requirements, copy, and design notes as issues or project docs in your Linear workspace.",
+        title: "Claim your handle",
+        description: "Pick blueprint.link/you and set a profile photo plus short bio.",
       },
       {
         number: "02",
-        title: "Map to sections",
+        title: "Add your links",
         description:
-          "Connect each Linear issue to a landing page section in the content config.",
+          "Drop in storefronts, socials, and campaigns. Group them with headers when you need structure.",
       },
       {
         number: "03",
-        title: "Ship the page",
+        title: "Publish and share",
         description:
-          "Build, preview locally, and deploy — iterate as your project evolves.",
+          "Copy your URL into every bio and QR. Update links anytime — the page stays the same.",
       },
     ],
   },
   cta: {
-    title: "Ready to connect your Linear project?",
-    description:
-      "Authenticate the Linear MCP server in Cursor to pull your project requirements and replace the placeholder content.",
-    button: { label: "Contact us", href: "mailto:hello@example.com" },
+    title: "Put every link on one Blueprint.",
+    description: "Start free. Upgrade when you need insights, custom domains, and scheduling.",
+    button: { label: "Start building", href: "mailto:hello@blueprint.link" },
   },
   footer: {
     copyright: `© ${new Date().getFullYear()} Blueprint. All rights reserved.`,
@@ -138,6 +140,15 @@ export const siteContent: SiteContent = {
       { label: "Privacy", href: "#" },
       { label: "Terms", href: "#" },
       { label: "GitHub", href: "https://github.com/garlobrian52/bitcoin" },
+    ],
+  },
+  preview: {
+    handle: "@studio",
+    bio: "Drops, playlists, and the shop.",
+    links: [
+      { label: "Shop the drop", href: "#" },
+      { label: "Listen now", href: "#" },
+      { label: "Book a session", href: "#" },
     ],
   },
 };
