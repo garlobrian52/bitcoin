@@ -1,72 +1,76 @@
-import type { Feature } from "@/content/site";
-
-type IconProps = {
-  className?: string;
-};
-
-export function FeatureIcon({
-  name,
-  className = "h-5 w-5",
-}: {
-  name: Feature["icon"];
-  className?: string;
-}) {
-  switch (name) {
-    case "sparkles":
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M12 3l1.2 4.2L17.5 8.5 13.2 9.7 12 14l-1.2-4.3L6.5 8.5l4.3-1.3L12 3zM5 14l.8 2.8L8.8 18l-3 1.2L5 22l-.8-2.8L1.2 18l3-1.2L5 14zm14 0l.8 2.8 3 1.2-3 1.2-.8 2.8-.8-2.8-3-1.2 3-1.2.8-2.8z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "shield":
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "zap":
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "layers":
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M12 3l9 5-9 5-9-5 9-5zm0 8l9 5-9 5-9-5 9-5z"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-  }
-}
+type IconProps = { className?: string };
 
 export function LogoMark({ className = "h-8 w-8" }: IconProps) {
   return (
-    <svg className={className} viewBox="0 0 32 32" fill="none" aria-hidden="true">
-      <rect x="4" y="4" width="24" height="24" rx="8" fill="currentColor" fillOpacity="0.12" />
+    <svg
+      className={className}
+      viewBox="0 0 32 32"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <rect width="32" height="32" rx="8" fill="currentColor" className="text-[var(--ink)]" />
       <path
-        d="M10 20V12h4.2c2.2 0 3.6 1.2 3.6 3.1 0 1.9-1.4 3.1-3.6 3.1H13v1.8h-3zm3-3.2h1.1c1 0 1.5-.5 1.5-1.3 0-.8-.5-1.3-1.5-1.3H13v2.6zM18.2 20l3.3-8h3.2l-4.8 11.2h-3.1L18.2 20z"
-        fill="currentColor"
+        d="M8 22V10h6.2c2.6 0 4.2 1.4 4.2 3.5 0 1.4-.8 2.5-2.1 3L19 22h-3.1l-2.4-4.7H11V22H8Zm3-7.2h2.8c1.1 0 1.8-.5 1.8-1.4s-.7-1.4-1.8-1.4H11v2.8Z"
+        fill="var(--paper)"
       />
+      <circle cx="23.5" cy="11.5" r="2.5" fill="var(--accent)" />
     </svg>
   );
+}
+
+export function FeatureIcon({
+  name,
+  className = "h-6 w-6",
+}: {
+  name: "links" | "brand" | "analytics" | "share";
+  className?: string;
+}) {
+  const common = {
+    className,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.75,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true as const,
+  };
+
+  switch (name) {
+    case "links":
+      return (
+        <svg {...common}>
+          <path d="M9 12h6" />
+          <path d="M10 8H7a4 4 0 0 0 0 8h3" />
+          <path d="M14 8h3a4 4 0 0 1 0 8h-3" />
+        </svg>
+      );
+    case "brand":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="8" r="3.5" />
+          <path d="M5 19c1.5-3.2 3.8-4.8 7-4.8s5.5 1.6 7 4.8" />
+        </svg>
+      );
+    case "analytics":
+      return (
+        <svg {...common}>
+          <path d="M4 19V9" />
+          <path d="M10 19V5" />
+          <path d="M16 19v-7" />
+          <path d="M22 19V8" />
+        </svg>
+      );
+    case "share":
+      return (
+        <svg {...common}>
+          <circle cx="18" cy="5" r="2.5" />
+          <circle cx="6" cy="12" r="2.5" />
+          <circle cx="18" cy="19" r="2.5" />
+          <path d="M8.3 10.8 15.7 6.7" />
+          <path d="M8.3 13.2 15.7 17.3" />
+        </svg>
+      );
+  }
 }
