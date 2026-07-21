@@ -3,9 +3,10 @@ import { siteContent } from "@/content/site";
 
 export function Hero() {
   const { brand, hero, preview } = siteContent;
+  const previewInitial = preview.handle.replace(/^@/, "").trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <section className="relative min-h-[calc(100svh-4rem)] overflow-hidden px-6 pb-16 pt-10 md:pb-20 md:pt-14">
+    <section className="relative overflow-hidden px-6 pb-16 pt-10 md:min-h-[calc(100svh-4rem)] md:pb-20 md:pt-14">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_40%,rgba(20,32,28,0.08)_100%)]"
         aria-hidden
@@ -57,20 +58,17 @@ export function Hero() {
               <div className="mx-auto mb-5 h-1.5 w-16 rounded-full bg-white/20" />
               <div className="flex flex-col items-center text-center text-[var(--paper)]">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[var(--accent)] font-display text-2xl font-semibold text-white">
-                  S
+                  {previewInitial}
                 </div>
                 <p className="mt-4 font-display text-xl font-semibold">{preview.handle}</p>
                 <p className="mt-1 text-sm text-white/65">{preview.bio}</p>
               </div>
               <ul className="mt-6 space-y-3">
-                {preview.links.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="block rounded-xl bg-white/95 px-4 py-3 text-center text-sm font-semibold text-[var(--ink)] transition hover:bg-[var(--accent-soft)]"
-                    >
-                      {link.label}
-                    </a>
+                {preview.links.map(({ label }) => (
+                  <li key={label}>
+                    <span className="block rounded-xl bg-white/95 px-4 py-3 text-center text-sm font-semibold text-[var(--ink)]">
+                      {label}
+                    </span>
                   </li>
                 ))}
               </ul>

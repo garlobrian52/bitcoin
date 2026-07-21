@@ -1,3 +1,5 @@
+import type { Feature } from "@/content/site";
+
 type IconProps = { className?: string };
 
 export function LogoMark({ className = "h-8 w-8" }: IconProps) {
@@ -23,7 +25,7 @@ export function FeatureIcon({
   name,
   className = "h-6 w-6",
 }: {
-  name: "links" | "brand" | "analytics" | "share";
+  name: Feature["icon"];
   className?: string;
 }) {
   const common = {
