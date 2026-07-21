@@ -13,10 +13,10 @@ export function LogoMark({ className = "h-8 w-8" }: IconProps) {
     >
       <rect width="32" height="32" rx="8" fill="currentColor" className="text-[var(--ink)]" />
       <path
-        d="M8 22V10h6.2c2.6 0 4.2 1.4 4.2 3.5 0 1.4-.8 2.5-2.1 3L19 22h-3.1l-2.4-4.7H11V22H8Zm3-7.2h2.8c1.1 0 1.8-.5 1.8-1.4s-.7-1.4-1.8-1.4H11v2.8Z"
+        d="M9 23V9h6.1c2.9 0 4.7 1.5 4.7 3.7 0 1.5-.8 2.7-2.1 3.3 1.7.5 2.8 1.9 2.8 3.7 0 2.4-1.9 4.3-5.1 4.3H9Zm3.1-8.2h2.6c1.3 0 2.1-.7 2.1-1.8s-.8-1.7-2.1-1.7h-2.6v3.5Zm0 5.7h3c1.5 0 2.4-.8 2.4-2s-.9-1.9-2.4-1.9h-3v3.9Z"
         fill="var(--paper)"
       />
-      <circle cx="23.5" cy="11.5" r="2.5" fill="var(--accent)" />
+      <circle cx="24" cy="10" r="2.4" fill="var(--accent)" />
     </svg>
   );
 }
