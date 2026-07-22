@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Products on a connected account (Stripe-Account header via `stripeAccount`).
  *
@@ -41,6 +42,19 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+=======
+import { NextResponse } from "next/server";
+import { getStripeClient } from "@/lib/stripe/client";
+import { StripeConfigError } from "@/lib/stripe/config";
+
+/**
+ * POST /api/connect/products
+ *
+ * Step 3 — Create a product on a connected account using the Stripe-Account header.
+ * Body: { accountId, name, description, priceInCents, currency }
+ */
+export async function POST(request: Request) {
+>>>>>>> origin/master
   try {
     const body = (await request.json()) as {
       accountId?: string;
@@ -50,6 +64,7 @@ export async function POST(request: NextRequest) {
       currency?: string;
     };
 
+<<<<<<< HEAD
     const accountId = body.accountId?.trim();
     const name = body.name?.trim();
     const description = body.description?.trim() ?? "";
@@ -62,12 +77,29 @@ export async function POST(request: NextRequest) {
           error:
             "accountId, name, and priceInCents (>= 50) are required to create a product.",
         },
+=======
+    const { accountId, name, description, priceInCents, currency } = body;
+
+    if (!accountId?.startsWith("acct_")) {
+      return NextResponse.json(
+        { error: "accountId must be a connected account ID (acct_...)." },
+        { status: 400 },
+      );
+    }
+    if (!name?.trim()) {
+      return NextResponse.json({ error: "name is required." }, { status: 400 });
+    }
+    if (!priceInCents || priceInCents < 50) {
+      return NextResponse.json(
+        { error: "priceInCents must be at least 50 (e.g. $0.50)." },
+>>>>>>> origin/master
         { status: 400 },
       );
     }
 
     const stripeClient = getStripeClient();
 
+<<<<<<< HEAD
     // Create the product + default price on the connected account.
     const product = await stripeClient.products.create(
       {
@@ -80,12 +112,37 @@ export async function POST(request: NextRequest) {
       },
       {
         // Use stripeAccount for the Stripe-Account header
+=======
+    const product = await stripeClient.products.create(
+      {
+        name: name.trim(),
+        description: description?.trim() || undefined,
+        default_price_data: {
+          unit_amount: priceInCents,
+          currency: (currency ?? "usd").toLowerCase(),
+        },
+      },
+      {
+        // Passes the Stripe-Account header so the product is created on the connected account
+>>>>>>> origin/master
         stripeAccount: accountId,
       },
     );
 
     return NextResponse.json({ product });
+<<<<<<< HEAD
   } catch (err) {
     return NextResponse.json({ error: stripeErrorMessage(err) }, { status: 500 });
+=======
+  } catch (error) {
+    if (error instanceof StripeConfigError) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    console.error("Failed to create product:", error);
+    return NextResponse.json(
+      { error: "Failed to create product on connected account." },
+      { status: 500 },
+    );
+>>>>>>> origin/master
   }
 }
