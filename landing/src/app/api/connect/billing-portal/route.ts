@@ -6,6 +6,7 @@ import { StripeConfigError, getAppUrl } from "@/lib/stripe/config";
  * POST /api/connect/billing-portal
  *
  * Create a Billing Portal session so the connected account can manage their subscription.
+ * V2 Accounts use customer_account (acct_...), not customer (cus_...).
  * Body: { accountId }
  */
 export async function POST(request: Request) {

@@ -1,13 +1,50 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient } from "@/lib/stripe/client";
 import { StripeConfigError } from "@/lib/stripe/config";
 
 /**
- * POST /api/connect/products
+ * GET  /api/connect/products?accountId=acct_...  — List products on a connected account.
+ * POST /api/connect/products                      — Create a product on a connected account.
  *
- * Step 3 — Create a product on a connected account using the Stripe-Account header.
- * Body: { accountId, name, description, priceInCents, currency }
+ * Both routes use the Stripe-Account header via the `stripeAccount` request option.
  */
+
+export async function GET(request: NextRequest) {
+  try {
+    const accountId = request.nextUrl.searchParams.get("accountId")?.trim();
+    if (!accountId?.startsWith("acct_")) {
+      return NextResponse.json(
+        { error: "accountId query param must be a connected account ID (acct_...)." },
+        { status: 400 },
+      );
+    }
+
+    const stripeClient = getStripeClient();
+
+    const products = await stripeClient.products.list(
+      {
+        limit: 20,
+        active: true,
+        expand: ["data.default_price"],
+      },
+      {
+        stripeAccount: accountId,
+      },
+    );
+
+    return NextResponse.json({ products: products.data });
+  } catch (error) {
+    if (error instanceof StripeConfigError) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    console.error("Failed to list products:", error);
+    return NextResponse.json(
+      { error: "Failed to list products on connected account." },
+      { status: 500 },
+    );
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {

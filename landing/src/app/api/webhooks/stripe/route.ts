@@ -15,7 +15,7 @@ import { handleSnapshotWebhookEvent } from "@/lib/webhooks/snapshot-events";
  *
  * Thin events (connected accounts):
  *   stripe listen --thin-events \
- *     'v2.core.account[requirements].updated,v2.core.account[.recipient].capability_status_updated,v2.core.account[configuration.merchant].capability_status_updated,v2.core.account[configuration.customer].capability_status_updated' \
+ *     'v2.core.account[requirements].updated,v2.core.account[configuration.recipient].capability_status_updated,v2.core.account[configuration.merchant].capability_status_updated,v2.core.account[configuration.customer].capability_status_updated' \
  *     --forward-thin-to http://localhost:3000/api/webhooks/stripe
  *
  * Snapshot events (platform subscriptions):
