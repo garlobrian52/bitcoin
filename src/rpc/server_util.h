@@ -8,6 +8,7 @@
 #include <any>
 
 #include <consensus/params.h>
+#include <kernel/cs_main.h>
 #include <uint256.h>
 
 class AddrMan;
@@ -48,8 +49,8 @@ AddrMan& EnsureAnyAddrman(const std::any& context);
  * Look up a block index by hash, throwing JSONRPCError if not found.
  * Caller must hold cs_main.
  */
-const CBlockIndex& EnsureBlockIndex(const node::BlockManager& blockman, const uint256& hash);
-CBlockIndex& EnsureBlockIndex(node::BlockManager& blockman, const uint256& hash);
+const CBlockIndex& EnsureBlockIndex(const node::BlockManager& blockman, const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
+CBlockIndex& EnsureBlockIndex(node::BlockManager& blockman, const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(::cs_main);
 
 /** Return an empty block index on top of the tip, with height, time and nBits set */
 void NextEmptyBlockIndex(CBlockIndex& tip, const Consensus::Params& consensusParams, CBlockIndex& next_index);
