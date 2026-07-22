@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Stripe Connect sample
+
+Accounts v2 onboarding, product catalog, storefront (Direct Charges), and platform subscriptions live under `/connect`. See [STRIPE_CONNECT.md](./STRIPE_CONNECT.md) for setup, env vars, and webhook commands.
+
 ## Getting Started
 
 First, run the development server:
