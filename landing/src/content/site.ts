@@ -61,11 +61,7 @@ export const siteContent: SiteContent = {
   nav: [
     { label: "Features", href: "#features" },
     { label: "How it works", href: "#how-it-works" },
-<<<<<<< HEAD
-    { label: "Connect", href: "/connect" },
-=======
     { label: "Stripe Connect", href: "/connect" },
->>>>>>> origin/master
     { label: "Get started", href: "#cta" },
   ],
   hero: {
