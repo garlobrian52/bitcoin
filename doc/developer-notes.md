@@ -942,6 +942,15 @@ annotation defined in `src/attributes.h`; please grep the codebase for examples.
     declaration. Annotations on the definition could lead to false positives
     (lack of compile failure) at call sites between the two.
 
+  - Propagate lock requirements through wrapper functions. If a wrapper calls
+    an annotated function without acquiring the required lock itself, give the
+    wrapper's declaration the same requirement. For example,
+    `BlockManager::LookupBlockIndex()` requires `cs_main`, so the RPC helper
+    `EnsureBlockIndex()` is declared with
+    `EXCLUSIVE_LOCKS_REQUIRED(::cs_main)`. This allows Clang to check callers of
+    the wrapper, while the run-time assertion in `LookupBlockIndex()` catches
+    violations in builds where lock assertions are enabled.
+
   - Prefer locks that are in a class rather than global, and that are
     internal to a class (private or protected) rather than public.
 
@@ -1332,6 +1341,28 @@ A few guidelines for introducing and reviewing new RPC interfaces:
     client may be aware of prior to entering a wallet RPC call, we must block
     until the wallet is caught up to the chainstate as of the RPC call's entry.
     This also makes the API much easier for RPC clients to reason about.
+
+- Use `EnsureBlockIndex()` from
+  [`server_util.h`](/src/rpc/server_util.h) when a user-supplied block hash must
+  have an entry in the block index and the standard `Block not found` RPC error
+  is appropriate. The caller must hold `cs_main`, as required by the function's
+  thread safety annotation:
+
+```C++
+const CBlockIndex* block_index;
+{
+    LOCK(::cs_main);
+    block_index = &EnsureBlockIndex(chainman.m_blockman, hash);
+    if (!chainman.ActiveChain().Contains(block_index)) {
+        throw JSONRPCError(RPC_INVALID_PARAMETER, "Block is not in main chain");
+    }
+}
+```
+
+  `EnsureBlockIndex()` only checks that the hash exists in
+  `BlockManager::m_block_index`. It does not check active-chain membership,
+  block data availability, or validation level; RPCs that require those
+  properties must check them separately.
 
 - Use *invalid* bech32 addresses (e.g. in the constant array `EXAMPLE_ADDRESS`) for
   `RPCExamples` help documentation.
