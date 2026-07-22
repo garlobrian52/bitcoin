@@ -10,7 +10,8 @@
  *  4. Subscribe the connected account to the platform plan + Billing Portal
  */
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { FormEvent, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 
 type AccountStatus = {
   accountId: string;
@@ -53,11 +54,16 @@ function formatMoney(unitAmount: number | null | undefined, currency: string) {
   }).format(unitAmount / 100);
 }
 
-export default function ConnectDashboardPage() {
+function ConnectDashboardInner() {
+  const searchParams = useSearchParams();
+  const accountIdFromQuery = searchParams.get("accountId")?.trim() || "";
+
   const [userId, setUserId] = useState("demo-seller-1");
   const [displayName, setDisplayName] = useState("Blueprint Demo Store");
   const [contactEmail, setContactEmail] = useState("seller@example.com");
-  const [accountId, setAccountId] = useState("");
+  // Local override after create / store hydrate; query wins until then (onboarding return).
+  const [localAccountId, setLocalAccountId] = useState("");
+  const accountId = localAccountId || accountIdFromQuery;
   const [storedUser, setStoredUser] = useState<StoredUser | null>(null);
   const [status, setStatus] = useState<AccountStatus | null>(null);
   const [products, setProducts] = useState<ProductRow[]>([]);
@@ -83,7 +89,7 @@ export default function ConnectDashboardPage() {
     if (!res.ok) throw new Error(data.error || "Failed to load user mapping");
     setStoredUser(data.user);
     if (data.user?.stripeAccountId) {
-      setAccountId(data.user.stripeAccountId);
+      setLocalAccountId(data.user.stripeAccountId);
     }
     return data.user as StoredUser | null;
   }, []);
@@ -105,15 +111,6 @@ export default function ConnectDashboardPage() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed to list products");
     setProducts(data.products || []);
-  }, []);
-
-  // Hydrate from ?accountId= on return from Stripe onboarding.
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const fromQuery = params.get("accountId");
-    if (fromQuery) {
-      setAccountId(fromQuery);
-    }
   }, []);
 
   useEffect(() => {
@@ -159,7 +156,7 @@ export default function ConnectDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not create account");
-      setAccountId(data.accountId);
+      setLocalAccountId(data.accountId);
       setStoredUser(data.user);
       setMessage(
         data.reused
@@ -183,7 +180,7 @@ export default function ConnectDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not create Account Link");
-      window.location.href = data.url;
+      window.location.assign(data.url);
     });
   }
 
@@ -225,7 +222,7 @@ export default function ConnectDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not start subscription Checkout");
-      window.location.href = data.url;
+      window.location.assign(data.url);
     });
   }
 
@@ -242,7 +239,7 @@ export default function ConnectDashboardPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not open Billing Portal");
-      window.location.href = data.url;
+      window.location.assign(data.url);
     });
   }
 
@@ -546,5 +543,20 @@ function StatusCard({
         {value}
       </p>
     </div>
+  );
+}
+
+/** Suspense boundary required for useSearchParams in the App Router. */
+export default function ConnectDashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-[#09090b] text-zinc-400">
+          Loading Connect dashboard…
+        </div>
+      }
+    >
+      <ConnectDashboardInner />
+    </Suspense>
   );
 }
